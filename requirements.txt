@@ -1,0 +1,4 @@
+flask
+flask_bootstrap
+flask_wtf
+python-ldap
