@@ -20,9 +20,17 @@ ldap_base = 'ou=user,dc=ecclesianuernberg,dc=de'
 
 
 def ldap_passwd(username, current_passwd, new_passwd):
-    full_DN = 'cn=%s,%s' % (username, ldap_base)
+    search_scope = ldap.SCOPE_SUBTREE
+    retrieve_attributes = ['cn']
+    search_filter = 'uid='+username
 
     l = ldap.open(ldap_server)
+
+    ldap_result_id = l.search(ldap_base, search_scope, search_filter,
+                              retrieve_attributes)
+
+    full_DN = l.result(ldap_result_id)[1][0][0]
+
     ldap_auth = l.bind(full_DN, current_passwd, ldap.AUTH_SIMPLE)
 
     try:
@@ -53,15 +61,15 @@ def index():
     if form.validate_on_submit():
         ldap_passwd(form.username.data, form.current_passwd.data,
                     form.new_passwd.data)
-        return redirect('/result')
+        return redirect('/passwd')
 
     return render_template('index.html', form=form)
 
 
 @app.route('/passwd')
 def passwd():
-    return render_template('result.html')
+    return render_template('passwd.html')
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True)
