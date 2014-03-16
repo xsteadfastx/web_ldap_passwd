@@ -62,13 +62,15 @@ def index():
         ldap_passwd(form.username.data, form.current_passwd.data,
                     form.new_passwd.data)
         return redirect('/passwd')
-
+    
+    print session
     return render_template('index.html', form=form)
 
 
 @app.route('/passwd')
 def passwd():
-    return render_template('passwd.html')
+    print session
+    return render_template('result.html')
 
 
 if __name__ == '__main__':

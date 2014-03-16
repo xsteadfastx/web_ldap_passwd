@@ -1,0 +1,13 @@
+{% extends "bootstrap/base.html" %}
+
+{% block content %}
+        <div class="container">
+        <h1>LDAP PASSWD</h1>
+        {% if session.wrong_password %}
+                <p>There was a problem!</p>
+        {% else %}
+                <p>Excellent!</p>
+        {% endif %}
+        </div>
+{% endblock %}
+
