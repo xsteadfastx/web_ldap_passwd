@@ -63,13 +63,11 @@ def index():
                     form.new_passwd.data)
         return redirect('/passwd')
     
-    print session
     return render_template('index.html', form=form)
 
 
 @app.route('/passwd')
 def passwd():
-    print session
     return render_template('result.html')
 
 
