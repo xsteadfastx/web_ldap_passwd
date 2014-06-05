@@ -1,13 +1,13 @@
-import os
-import ldap
-import sha
-import string
 from base64 import encodestring
-from flask import Flask, render_template, session, redirect
+from flask import Flask, render_template, redirect, flash
+from flask_bootstrap import Bootstrap
 from flask_wtf import Form
 from wtforms import TextField, PasswordField
 from wtforms.validators import Required, EqualTo
-from flask_bootstrap import Bootstrap
+import ldap
+import os
+import sha
+import string
 
 
 app = Flask(__name__)
@@ -33,10 +33,7 @@ def ldap_passwd(username, current_passwd, new_passwd):
 
     ldap_auth = l.bind(full_DN, current_passwd, ldap.AUTH_SIMPLE)
 
-    try:
-        l.result(ldap_auth)
-    except:
-        session['wrong_password'] = True
+    l.result(ldap_auth)
 
     sha_digest = sha.new(new_passwd).digest()
     encoded_pw = '{SHA}' + string.strip(encodestring(sha_digest))
@@ -59,16 +56,16 @@ class LDAPForm(Form):
 def index():
     form = LDAPForm()
     if form.validate_on_submit():
-        ldap_passwd(form.username.data, form.current_passwd.data,
-                    form.new_passwd.data)
-        return redirect('/passwd')
-    
+        try:
+            ldap_passwd(form.username.data, form.current_passwd.data,
+                        form.new_passwd.data)
+            flash('Succesfully changed password', 'success')
+            return redirect('/')
+        except:
+            flash('Failed to change password', 'danger')
+            return redirect('/')
+
     return render_template('index.html', form=form)
-
-
-@app.route('/passwd')
-def passwd():
-    return render_template('result.html')
 
 
 if __name__ == '__main__':
